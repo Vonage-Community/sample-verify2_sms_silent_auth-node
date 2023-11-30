@@ -1,0 +1,31 @@
+<%- include('./_partials/top'); %>
+
+<h1><a href="/silent">Silent Auth</a></h1>
+
+<div class="p-4 text-green-500" id="url"></div>
+<div class="p-4 text-red-500" id="error"></div>
+<div class="p-4 text-green-500" id="notice"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Loaded')
+  const url = new URL(window.location.href);
+  document.getElementById('url').innerHTML = url.toString();
+  const params = new URLSearchParams(url.hash.substring(1));
+  document.getElementById('notice').innerHTML = params.toString();
+  if (params.has('error_description')) {
+    const error_description = params.get('error_description');
+    document.getElementById('error').innerHTML = error_description;
+  }
+  if (!params.has('request_id') || !params.has('code')) {
+    document.getElementById('error').innerHTML = "Something went wrong";
+  } else {
+    const request_id = params.get('request_id');
+    const code = params.get('code');
+    // document.getElementById('url').innerHTML = window.location.origin + '/silent/check?request_id=' + request_id + '&code=' + code
+    window.location.href = window.location.origin + '/silent/check?request_id=' + request_id + '&code=' + code;
+  }
+})
+</script>
+
+<%- include('./_partials/bottom'); %>
