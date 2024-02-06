@@ -7,9 +7,9 @@
 <div class="p-4 text-green-500" id="notice"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Loaded')
-  const url = new URL(window.location.href);
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Loaded')
+    const url = new URL(window.location.href);
   document.getElementById('url').innerHTML = url.toString();
   const params = new URLSearchParams(url.hash.substring(1));
   document.getElementById('notice').innerHTML = params.toString();
@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     const request_id = params.get('request_id');
     const code = params.get('code');
-    // document.getElementById('url').innerHTML = window.location.origin + '/silent/check?request_id=' + request_id + '&code=' + code
     window.location.href = window.location.origin + '/silent/check?request_id=' + request_id + '&code=' + code;
   }
 })

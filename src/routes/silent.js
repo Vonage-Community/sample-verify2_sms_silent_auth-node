@@ -8,12 +8,11 @@ dotenv.config();
 
 const privateKeyPath = path.join(process.env.VONAGE_PRIVATE_KEY_PATH);
 const privateKey = fs.readFileSync(privateKeyPath, 'utf8').toString();
-
+const silentAuthChecks = [];
 
 export const silentIndex = async (req, res) => {
   res.render('silent');
 };
-
 
 export const silentStart = async (req, res) => {
   const { number, redirect_url } = req.body;
@@ -35,34 +34,50 @@ export const silentStart = async (req, res) => {
       },
     );
 
-    if (data.request_id && data.check_url) {
-      res.redirect(data.check_url);
-    } else {
+    if (!data.request_id || !data.check_url) {
       res.render('silent', { error: 'Something went wrong' });
+      return;
     }
+
+    const randomSilentAuthId = Math.random();
+    silentAuthChecks.push({ 'id' : randomSilentAuthId, 'requestId' : data.request_id })
+    res.cookie('session_data', randomSilentAuthId, {'maxAge' : 6000})
+    res.redirect(data.check_url)
   } catch (error) {
     console.log(error);
     res.render('silent', { error: error.message });
   }
 };
 
-
 export const silentCallback = async (req, res) => {
   res.render('silent_callback');
 };
 
-
 export const silentCheck = async (req, res) => {
   const request_id = req.query.request_id;
+  const sessionId = req.cookies.session_data;
+
+  const { requestId } = silentAuthChecks.find(({ id }) => `${id}` === `${sessionId}`) || {}
+  console.log(requestId, request_id);
+
+  // XSS Check
+  if (request_id !== requestId) {
+    res.render('silent', {
+      error: 'Something went wrong. Please try again. 1'
+    });
+    return;
+  }
+
   const code = req.query.code;
   console.log('silentCheck', request_id, code);
 
-  if (!request_id || !code) {
+  if (!code) {
     res.render('silent', {
       error: 'Something went wrong. Please try again.'
     });
     return;
   }
+  
   const jwtToken = tokenGenerate(
     process.env.VONAGE_APPLICATION_ID,
     privateKey

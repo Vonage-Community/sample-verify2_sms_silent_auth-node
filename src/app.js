@@ -6,7 +6,6 @@ if (!process.env.VONAGE_APPLICATION_ID || !process.env.VONAGE_PRIVATE_KEY_PATH) 
   process.exit(1);
 }
 
-
 import Express from 'express';
 const app = Express();
 
@@ -17,7 +16,6 @@ app.set('view engine', 'ejs');
 app.set('views', 'src/views');
 
 app.use(Express.static('public'))
-
 app.use(Express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => { res.render('index') });
@@ -27,13 +25,11 @@ app.get('/sms', smsIndex);
 app.use('/sms/start', smsStart);
 app.use('/sms/check', smsCheck);
 
-
 import { silentIndex, silentStart, silentCallback, silentCheck } from './routes/silent.js';
 app.get('/silent', silentIndex);
 app.use('/silent/start', silentStart);
 app.use('/silent/callback', silentCallback);
 app.use('/silent/check', silentCheck);
-
 
 app.all('*', (req, res) => {
   res.status(404).json({
