@@ -8,7 +8,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@vonage/jwt": "^1.7.0",
+    "@vonage/jwt": "^1.8.0",
     "axios": "^1.6.2",
     "cookie-parser": "^1.4.6",
     "debug": "2.6.9",
